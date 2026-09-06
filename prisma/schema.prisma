@@ -3,12 +3,10 @@ generator client {
 }
 
 datasource db {
-  // ponytail: SQLite for zero-setup local dev. PRD calls for Postgres —
-  // swap provider to "postgresql", swap the adapter in prisma.config.ts /
-  // src/lib/prisma.ts to @prisma/adapter-pg, and re-run migrations.
-  // Prisma 7: connection URL lives in prisma.config.ts + driver adapters,
+  // Postgres (PRD 5.3). Connection URL lives in prisma.config.ts + the
+  // driver adapter in src/lib/prisma.ts (Prisma 7 driver-adapter model),
   // not here.
-  provider = "sqlite"
+  provider = "postgresql"
 }
 
 enum Role {
