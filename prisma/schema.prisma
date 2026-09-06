@@ -1,0 +1,107 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  // ponytail: SQLite for zero-setup local dev. PRD calls for Postgres —
+  // swap provider to "postgresql", swap the adapter in prisma.config.ts /
+  // src/lib/prisma.ts to @prisma/adapter-pg, and re-run migrations.
+  // Prisma 7: connection URL lives in prisma.config.ts + driver adapters,
+  // not here.
+  provider = "sqlite"
+}
+
+enum Role {
+  OPERATOR
+  LEADER
+}
+
+enum ShiftColor {
+  RED
+  WHITE
+}
+
+enum TimePeriod {
+  DAY
+  NIGHT
+}
+
+enum CaseStatus {
+  ACTIVE
+  WARNING
+  NG
+  SCRAPPED
+}
+
+enum MaintenanceAction {
+  CREATE
+  RESET
+  SCRAP
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  username     String   @unique
+  passwordHash String
+  role         Role
+  createdAt    DateTime @default(now())
+
+  shiftLogs       ShiftLog[]
+  maintenanceLogs MaintenanceLog[]
+}
+
+model IngotCase {
+  id               String     @id @default(cuid())
+  caseNumber       String     @unique
+  totalTonnageKg   Decimal    @default(0)
+  maxTonnageKg     Decimal    @default(20000)
+  warningTonnageKg Decimal    @default(16000)
+  status           CaseStatus @default(ACTIVE)
+  cycleCount       Int        @default(0)
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+
+  pouringEntries  PouringEntry[]
+  maintenanceLogs MaintenanceLog[]
+}
+
+model ShiftLog {
+  id         String     @id @default(cuid())
+  logDate    DateTime
+  shiftColor ShiftColor
+  timePeriod TimePeriod
+  operatorId String
+  operator   User       @relation(fields: [operatorId], references: [id])
+  createdAt  DateTime   @default(now())
+
+  pouringEntries PouringEntry[]
+}
+
+model PouringEntry {
+  id           String    @id @default(cuid())
+  shiftLogId   String
+  shiftLog     ShiftLog  @relation(fields: [shiftLogId], references: [id], onDelete: Cascade)
+  ingotCaseId  String
+  ingotCase    IngotCase @relation(fields: [ingotCaseId], references: [id])
+  weightKg     Decimal   @default(600)
+  tonnageAfter Decimal
+  createdAt    DateTime  @default(now())
+
+  @@index([ingotCaseId])
+  @@index([shiftLogId])
+}
+
+model MaintenanceLog {
+  id            String            @id @default(cuid())
+  ingotCaseId   String
+  ingotCase     IngotCase         @relation(fields: [ingotCaseId], references: [id])
+  leaderId      String
+  leader        User              @relation(fields: [leaderId], references: [id])
+  actionType    MaintenanceAction
+  tonnageBefore Decimal
+  notes         String
+  createdAt     DateTime          @default(now())
+
+  @@index([ingotCaseId])
+}
