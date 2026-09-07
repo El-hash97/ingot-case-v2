@@ -6,7 +6,9 @@ export function IngotCaseCard({ ingotCase }: { ingotCase: IngotCaseDto }) {
   return (
     <div className="flex flex-col gap-2 border-2 border-border bg-surface p-3 shadow-[var(--shadow-hard-sm)]">
       <div className="flex items-center justify-between">
-        <span className="font-display text-lg font-extrabold">{ingotCase.caseNumber}</span>
+        <span className="border-2 border-border bg-blue px-2 py-0.5 font-display text-lg font-extrabold text-white">
+          {ingotCase.caseNumber}
+        </span>
         <StatusBadge status={ingotCase.status} />
       </div>
       <ProgressBar percent={ingotCase.percent} status={ingotCase.status} />
