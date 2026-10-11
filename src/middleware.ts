@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifySessionToken, SESSION_COOKIE_NAME } from "@/lib/session";
 
-const LEADER_ONLY_PREFIXES = ["/admin", "/api/admin"];
+const LEADER_ONLY_PREFIXES = ["/admin", "/api/admin", "/api/analytics"];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;

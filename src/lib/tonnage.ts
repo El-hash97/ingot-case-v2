@@ -4,6 +4,9 @@
  */
 import type { CaseStatus } from "@prisma/client";
 
+/** Forecast remaining life under this many days is flagged urgent in the UI. */
+export const URGENT_DAYS = 3;
+
 export function statusForTonnage(
   totalTonnageKg: number,
   maxTonnageKg: number,
